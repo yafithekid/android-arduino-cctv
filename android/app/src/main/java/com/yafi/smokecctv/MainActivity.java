@@ -75,11 +75,11 @@ public class MainActivity extends Activity {
 
 
     private void doRefreshDeviceList(){
-        mBluetoothAdapter.startDiscovery();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         this.mPairedDevicesArrayAdapter.clear();
         for(BluetoothDevice bd: pairedDevices){
             this.mPairedDevicesArrayAdapter.add(bd.getName() + "\n" + bd.getAddress());
         }
+        this.pairedListView.setAdapter(this.mPairedDevicesArrayAdapter);
     }
 }
