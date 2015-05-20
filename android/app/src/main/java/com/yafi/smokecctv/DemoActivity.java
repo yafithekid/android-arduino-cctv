@@ -1,4 +1,4 @@
-package com.example.fileuploader;
+package com.yafi.smokecctv;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -23,7 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class DemoActivity extends Activity {
 
 	private static final int SELECT_IMAGE = 2;
 	String selectedPath = "";
@@ -35,12 +35,12 @@ public class MainActivity extends Activity {
 		openGalleryImage();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		// Inflate the menu; this adds items to the action bar if it is present.
+//		getMenuInflater().inflate(R.menu.main, menu);
+//		return true;
+//	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

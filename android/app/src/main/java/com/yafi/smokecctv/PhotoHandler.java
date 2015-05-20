@@ -1,5 +1,6 @@
 package com.yafi.smokecctv;
 
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
 import android.os.Environment;
@@ -11,11 +12,17 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+//get the picture and upload to server
 public class PhotoHandler implements Camera.PictureCallback {
     private final Context context;
+    //untuk penanda extra antara handler dan activity
+    private String resultImagePath;
+    private String serverUri;
 
-    public PhotoHandler(Context context){
+    public PhotoHandler(Context context,String resultImagePath,String serverUri){
         this.context = context;
+        this.resultImagePath = resultImagePath;
+        this.serverUri = serverUri;
     }
 
     @Override
@@ -41,8 +48,15 @@ public class PhotoHandler implements Camera.PictureCallback {
             FileOutputStream fos = new FileOutputStream(pictureFile);
             fos.write(data);
             fos.close();
-            Toast.makeText(context, "New Image saved:" + photoFile,
+            Toast.makeText(context, "New Image saved:" + pictureFile.getAbsolutePath(),
                     Toast.LENGTH_LONG).show();
+            this.resultImagePath = new String(pictureFile.getAbsolutePath());
+            //upload the file
+            if (serverUri.isEmpty()){
+                Toast.makeText(context,"Warning: server url is null",Toast.LENGTH_SHORT).show();
+            } else {
+                (new UploaderTask(this.serverUri,pictureFile.getAbsolutePath())).execute();
+            }
         } catch (Exception error) {
             Log.d(CCTVActivity.DEBUG_TAG, "File" + filename + "not saved: "
                     + error.getMessage());

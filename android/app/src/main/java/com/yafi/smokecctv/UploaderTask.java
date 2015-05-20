@@ -1,4 +1,4 @@
-package com.example.fileuploader;
+package com.yafi.smokecctv;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
