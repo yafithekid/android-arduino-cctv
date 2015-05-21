@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,6 +40,11 @@ public class CCTVActivity extends Activity {
     TextView smokeText;
     EditText exposureLimitText;
     EditText serverIpText;
+    EditText captureIntervalEditText;
+    CheckBox autoCaptureCheckBox;
+    public boolean isSmokeDetected;
+    public boolean isTakingPicture;
+
     ImageView photoResultImageView;
 
     final int HANDLER_STATE = 0;
@@ -49,6 +55,9 @@ public class CCTVActivity extends Activity {
 
     //koneksi untuk baca/tulis socket
     private ConnectionThread mConnectionThread;
+
+    //thread untuk ngeloop autocapture
+    private TakePictureThread mTakePictureThread;
 
     //camera object
     private Camera camera;
@@ -70,6 +79,11 @@ public class CCTVActivity extends Activity {
         serverIpText = (EditText) findViewById(R.id.serverIPText);
 
         exposureLimitText = (EditText) findViewById(R.id.limitExposureText);
+
+        autoCaptureCheckBox = (CheckBox) findViewById(R.id.autoCaptureCheckbox);
+
+        captureIntervalEditText = (EditText) findViewById(R.id.captureIntervalEditText);
+
         //bikin handler untuk menerima data dari connection thread
         btInputHandler = new Handler(){
             public void handleMessage(Message msg){
@@ -89,8 +103,10 @@ public class CCTVActivity extends Activity {
                         int value = Integer.parseInt(printedData);
                         int limit = Integer.parseInt(exposureLimitText.getText().toString());
                         if (value > limit){
+                            isSmokeDetected = true;
                             smokeText.setTextColor(COLOR_RED);
                         } else {
+                            isSmokeDetected = false;
                             smokeText.setTextColor(COLOR_GREEN);
                         }
                         //hapus data newline
@@ -99,6 +115,7 @@ public class CCTVActivity extends Activity {
                 }
             }
         };
+
 
     }
 
@@ -131,6 +148,8 @@ public class CCTVActivity extends Activity {
         mConnectionThread = new ConnectionThread(mBtSocket);
         mConnectionThread.start();
 
+        mTakePictureThread = new TakePictureThread();
+        mTakePictureThread.start();
         getCameraInstance();
     }
 
@@ -146,6 +165,13 @@ public class CCTVActivity extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mTakePictureThread.interrupt();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        mTakePictureThread.interrupt();
     }
 
 
@@ -185,13 +211,15 @@ public class CCTVActivity extends Activity {
 
     private void doTakePicture(){
         Log.d(DEBUG_TAG,"Taking picture");
+        isTakingPicture = true;
         String resultImagePath = new String();
         camera.takePicture(null, null, new PhotoHandler(this.getApplicationContext(),resultImagePath,getServerUri()));
+        isTakingPicture = false;
     }
 
     public String getServerUri(){
         StringBuilder serverIP = new StringBuilder();
-        serverIP.append("http://").append(serverIpText.getText().toString()).append("/tes-android/upload.php");
+        serverIP.append("http://").append(serverIpText.getText().toString()).append("/smoke-cctv-backend/public/photo/create");
         return serverIP.toString();
     }
 
@@ -205,6 +233,62 @@ public class CCTVActivity extends Activity {
         doTakePicture();
     }
 
+    private static long lastCaptureImageTime = 0;
+
+    //time interval untuk ngecapture image
+    private long getTimeLimit(){
+        return Long.parseLong(captureIntervalEditText.getText().toString());
+    }
+
+    private boolean isAutoCaptureOn(){
+        return (autoCaptureCheckBox.isChecked());
+    }
+
+    //ngecek apakah udah harus ambil gambar lewat autocapture
+    private boolean isCaptureImageNow(){
+        //kalo gak ada smoke jangan diupdate
+        if (!isSmokeDetected){
+           return false;
+        }
+        //kalo lagi ngeproses, jangan ambil gambar
+        else if (isTakingPicture){
+            return false;
+        }
+        //cek apa overflow
+        else if (System.currentTimeMillis() < lastCaptureImageTime){
+            lastCaptureImageTime = System.currentTimeMillis();
+            return false;
+        //cek kalo dicentang, nyala
+        } else if (isAutoCaptureOn()){
+
+            //kalo udah lebih dari time limit, ambil gambar
+            if (System.currentTimeMillis() - lastCaptureImageTime > getTimeLimit()){
+                lastCaptureImageTime = System.currentTimeMillis();
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private class TakePictureThread extends Thread{
+
+        public TakePictureThread(){
+        }
+
+        public void run(){
+            try {
+                while (true){
+                    if (isCaptureImageNow()){
+                        doTakePicture();
+                    }
+                }
+            //kalo thread kena onpause onstop, bakal exception di isCaptureImage.
+            } catch (NullPointerException npe){ }
+        }
+    }
 
     private class ConnectionThread extends Thread{
         private final InputStream mmInputStream;

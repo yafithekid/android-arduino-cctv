@@ -13,11 +13,26 @@
         android:layout_height="fill_parent"
         android:id="@+id/asdasdas">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Server IP"
+            android:id="@+id/textView" />
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/serverIPText"
-            android:hint="Server IP" />
+            android:hint="Server IP"
+            android:textSize="50px" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Exposure Thresold"
+            android:id="@+id/textView2" />
 
         <EditText
             android:layout_width="fill_parent"
@@ -25,28 +40,54 @@
             android:id="@+id/limitExposureText"
             android:visibility="visible"
             android:hint="CO Exposure Detection"
-            android:text="500"
+            android:text="380"
             android:phoneNumber="false"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textSize="50px" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Capture Interval"
+            android:id="@+id/textView3" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/captureIntervalEditText"
+            android:textSize="50px"
+            android:text="8000" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Smoke Exposure"
-            android:id="@+id/labelSmokeText" />
+            android:id="@+id/labelSmokeText"
+            android:textSize="30px"
+            android:layout_marginTop="50px" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="@android:style/TextAppearance.Large"
             android:text="Medium Text"
-            android:id="@+id/smokeText" />
+            android:id="@+id/smokeText"
+            android:textSize="50px" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AutoCapture"
+            android:id="@+id/autoCaptureCheckbox"
+            android:layout_gravity="center_horizontal"
+            android:checked="false" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Capture"
+            android:text="Force Capture"
             android:id="@+id/captureButton"
             android:layout_gravity="center_horizontal"
             android:onClick="onClickButtonCapture" />

@@ -8,27 +8,31 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 
 public class UploaderTask extends AsyncTask<String, String, String> {
 	private String urlString;
 	private String selectedPath;
+	private Context context;
 	
-	
-	public UploaderTask(String _serverURI, String _filePath){
+	public UploaderTask(Context context,String _serverURI, String _filePath){
+        this.context = context;
 		urlString = _serverURI;
 		selectedPath = _filePath;
 	}
 	
 	@Override
 	protected String doInBackground(String... params) {
-		// TODO Auto-generated method stub
 		if(doFileUpload()){
-			Log.d("doInBackground","Berhasil");
+            //Toast.makeText(context,"Upload successful",Toast.LENGTH_SHORT).show();
+            Log.d("doInBackground","Berhasil");
 		}
 		else{
+            //Toast.makeText(context,"Upload failed",Toast.LENGTH_SHORT).show();
 			Log.d("doInBackground","Gagal");
 		}
 		return null;

@@ -80,7 +80,7 @@ public class DemoActivity extends Activity {
 				Log.d("Data", data.getDataString());
 				selectedPath = getPath(selectedImageUri);
 				Log.d("DEBUG : ", "SELECT_IMAGE Path : " + selectedPath);
-				(new UploaderTask("http://192.168.42.70/tes-android/upload.php",selectedPath)).execute("");
+				(new UploaderTask(this.getApplicationContext(),"http://192.168.42.70/tes-android/upload.php",selectedPath)).execute("");
 			}
 
 		}

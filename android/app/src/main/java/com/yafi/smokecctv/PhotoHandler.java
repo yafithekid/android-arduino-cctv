@@ -48,14 +48,15 @@ public class PhotoHandler implements Camera.PictureCallback {
             FileOutputStream fos = new FileOutputStream(pictureFile);
             fos.write(data);
             fos.close();
-            Toast.makeText(context, "New Image saved:" + pictureFile.getAbsolutePath(),
-                    Toast.LENGTH_LONG).show();
+
             this.resultImagePath = new String(pictureFile.getAbsolutePath());
             //upload the file
-            if (serverUri.isEmpty()){
+            if (serverUri.length() == 0){
                 Toast.makeText(context,"Warning: server url is null",Toast.LENGTH_SHORT).show();
             } else {
-                (new UploaderTask(this.serverUri,pictureFile.getAbsolutePath())).execute();
+                Toast.makeText(context, "Uploading file :" + pictureFile.getAbsolutePath(),
+                        Toast.LENGTH_SHORT).show();
+                (new UploaderTask(context,this.serverUri,pictureFile.getAbsolutePath())).execute();
             }
         } catch (Exception error) {
             Log.d(CCTVActivity.DEBUG_TAG, "File" + filename + "not saved: "
